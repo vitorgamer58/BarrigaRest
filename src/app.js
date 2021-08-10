@@ -17,4 +17,9 @@ app.get('/', (req, res) => {
   res.status(200).send();
 });
 
+// Loga as consultas feitas ao banco de dados
+/* app.db.on('query', (query) => {
+  console.log({ sql: query.sql, bindings: query.bindings ? query.bindings.join(',') : '' });
+}).on('query-response', (res) => console.log(res)); */
+
 module.exports = app;
