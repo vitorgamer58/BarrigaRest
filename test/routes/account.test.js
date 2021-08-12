@@ -18,6 +18,19 @@ test('Should insert an account with sucess', async () => {
     });
 });
 
+test('Should not insert an accout without name', async () => {
+  await request(app).post(MAIN_ROUTE)
+    .send({ user_id: user.id })
+    .then((res) => {
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBe('Nome é um atributo obrigatório');
+    });
+});
+
+test.skip('Should not insert an account with duplicated name for the same user ', () => {
+  // Precisa ter a autenticação primeiro.
+});
+
 test('Shoud list all accounts', async () => {
   await app.db('accounts')
     .insert({ name: 'acc list', user_id: user.id })
@@ -27,6 +40,14 @@ test('Shoud list all accounts', async () => {
       expect(res.body.length).toBeGreaterThan(0);
     });
 });
+
+test.skip('Should list only accouts of current user', () => {});
+
+test.skip('Should not return an account of another user', () => {});
+
+test.skip('Should not remove an account of another user', () => {});
+
+test.skip('Should not modify an account of another user', () => {});
 
 test('Should return account by ID', async () => {
   await app.db('accounts')
