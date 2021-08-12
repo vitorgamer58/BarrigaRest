@@ -38,3 +38,23 @@ test('Should return account by ID', async () => {
       expect(res.body.user_id).toBe(user.id);
     });
 });
+
+test('Should modifier an account', async () => {
+  await app.db('accounts')
+    .insert({ name: 'acc to update', user_id: user.id }, ['id'])
+    .then((acc) => request(app).put(`${MAIN_ROUTE}/${acc[0].id}`)
+      .send({ name: 'Acc updated' }))
+    .then((res) => {
+      expect(res.status).toBe(200);
+      expect(res.body.name).toBe('Acc updated');
+    });
+});
+
+test('Should remove an account', async () => {
+  await app.db('accounts')
+    .insert({ name: 'acc to remove', user_id: user.id }, ['id'])
+    .then((acc) => request(app).delete(`${MAIN_ROUTE}/${acc[0].id}`))
+    .then((res) => {
+      expect(res.status).toBe(204); // 204 - No Content
+    });
+});
