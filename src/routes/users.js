@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 module.exports = (app) => {
   const findAll = (req, res, next) => {
     app.services.user.findAll()

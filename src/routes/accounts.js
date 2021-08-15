@@ -32,6 +32,6 @@ module.exports = (app) => {
   };
 
   return {
-    create, getAll, get, update, remove,
+    create, getAll, get, update, remove
   };
 };

@@ -26,6 +26,6 @@ module.exports = (app) => {
   };
 
   return {
-    save, findAll, find, update, remove,
+    save, findAll, find, update, remove
   };
 };
