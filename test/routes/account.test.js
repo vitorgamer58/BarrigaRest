@@ -2,7 +2,7 @@ const request = require('supertest');
 const jwt = require('jwt-simple');
 const app = require('../../src/app');
 
-const MAIN_ROUTE = '/accounts';
+const MAIN_ROUTE = '/v1/accounts';
 let user;
 
 beforeAll(async () => {
@@ -31,7 +31,7 @@ test('Should not insert an accout without name', async () => {
     });
 });
 
-test.skip('Should not insert an account with duplicated name for the same user ', () => {
+test.skip('Should not insert an account with duplicated name for the same user', () => {
   // Precisa ter a autenticação primeiro.
 });
 

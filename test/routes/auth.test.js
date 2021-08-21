@@ -6,9 +6,11 @@ test('Should create user with signup route', async () => {
     .send({ name: 'Walter', email: `${Date.now()}@gmail.com`, passwd: '123456' })
     .then((res) => {
       expect(res.status).toBe(201);
+      // expect(res.body).toHaveProperty('email');
+      // expect(res.body).not.toHaveProperty('passwd');
+      // toContainAllKeys assert from jest-extended
+      expect(res.body).toContainAnyKeys(['name', 'email']);
       expect(res.body.name).toBe('Walter');
-      expect(res.body).toHaveProperty('email');
-      expect(res.body).not.toHaveProperty('passwd');
     });
 });
 
@@ -47,7 +49,7 @@ test('Should not authenticate the user with invalid email', async (done) => {
 });
 
 test('Should not access a protected route without token', async () => {
-  await request(app).get('/users')
+  await request(app).get('/v1/users')
     .then((res) => {
       expect(res.status).toBe(401);
     });
