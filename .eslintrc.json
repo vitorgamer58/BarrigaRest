@@ -7,6 +7,10 @@
     "rules": {
         "no-console": "off",
         "comma-dangle": ["error", "never"],
-        "jest/valid-expect-in-promise": "off"
+        "jest/valid-expect-in-promise": "off",
+        "object-curly-newline": [
+            "error",
+            { "multiline": true }
+        ]
     }
 }

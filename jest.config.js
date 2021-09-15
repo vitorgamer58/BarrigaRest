@@ -1,3 +1,1 @@
-module.exports = {
-  setupTestFrameworkScriptFile: 'jest-extended'
-};
+module.exports = { setupTestFrameworkScriptFile: 'jest-extended' };
