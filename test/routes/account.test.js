@@ -10,12 +10,12 @@ const usersToDelete = [];
 const accountsToDelete = [];
 
 beforeAll(async () => {
-  const res = await app.services.user.save({ name: 'User account', email: `${Date.now()}@gmail.com`, passwd: 123456 });
+  const res = await app.services.user.save({ name: 'User account acc', email: `${Date.now()}@gmail.com`, passwd: 123456 });
   user = { ...res[0] };
   user.token = jwt.encode(user, 'Segredo!');
-  const res2 = await app.services.user.save({ name: 'User account #2', email: `${Date.now()}@gmail.com`, passwd: 123456 });
+  const res2 = await app.services.user.save({ name: 'User account acc #2', email: `${Date.now()}@gmail.com`, passwd: 123456 });
   user2 = { ...res2[0] };
-  const res3 = await app.services.user.save({ name: 'User account #3', email: `${Date.now()}@gmail.com`, passwd: 123456 });
+  const res3 = await app.services.user.save({ name: 'User account acc #3', email: `${Date.now()}@gmail.com`, passwd: 123456 });
   user3 = { ...res3[0] };
   user3.token = jwt.encode(user3, 'Segredo!');
   usersToDelete.push(...res, ...res2, ...res3);

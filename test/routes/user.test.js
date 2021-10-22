@@ -5,11 +5,19 @@ const app = require('../../src/app');
 const MAIN_ROUTE = '/v1/users';
 const mail = `${Date.now()}@gmail.com`;
 let user;
+const usersToRemove = [];
 
 beforeAll(async () => {
   const res = await app.services.user.save({ name: 'User account', email: `${Date.now()}@gmail.com`, passwd: 123456 });
   user = { ...res[0] };
   user.token = jwt.encode(user, 'Segredo!');
+  usersToRemove.push(...res);
+});
+
+afterAll(() => {
+  usersToRemove.forEach(async (usr) => {
+    await app.db('users').where({ id: usr.id }).del();
+  });
 });
 
 test('Should list all users', async () => {
@@ -29,6 +37,7 @@ test('Should insert user', async () => {
     .then((res) => {
       expect(res.status).toBe(201);
       expect(res.body.name).toBe('Joao Silva');
+      usersToRemove.push({ id: res.body.id });
       expect(res.body).not.toHaveProperty('passwd');
     });
 });
@@ -38,6 +47,7 @@ test('Should insert encrypted password', async () => {
     .post(MAIN_ROUTE)
     .send({ name: 'Joao Silva', email: `${Date.now()}@gmail.com`, passwd: '123456' })
     .set('authorization', `bearer ${user.token}`);
+  usersToRemove.push({ id: res.body.id });
   expect(res.status).toBe(201);
   const { id } = res.body;
   const userDB = await app.services.user.findOne({ id });

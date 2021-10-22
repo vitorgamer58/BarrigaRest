@@ -49,10 +49,10 @@ describe('When create a valid transfer...', () => {
   test('Should return status 201 and the data of transfer', async () => {
     await request(app).post(MAIN_ROUTE)
       .set('authorization', `bearer ${TOKEN}`)
-      .send({ description: 'Regular transfer', user_id: 10000, acc_ori_id: 10000, acc_dest_id: 10001, ammount: 100, date: new Date() })
+      .send({ description: 'Regular transfer2', user_id: 10000, acc_ori_id: 10000, acc_dest_id: 10001, ammount: 100, date: new Date() })
       .then(async (res) => {
         expect(res.status).toBe(201);
-        expect(res.body.description).toBe('Regular transfer');
+        expect(res.body.description).toBe('Regular transfer2');
         transferId = res.body.id;
       });
   });
