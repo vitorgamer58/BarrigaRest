@@ -8,15 +8,19 @@ let user;
 let user2;
 let accUser;
 let accUser2;
+const transactions = [];
+const accountsToRemove = [];
+const usersToRemove = [];
 
 beforeAll(async () => {
-  await app.db('transactions').del();
-  await app.db('accounts').del();
-  await app.db('users').del();
+  // await app.db('transactions').del();
+  // await app.db('accounts').del();
+  // await app.db('users').del();
   const users = await app.db('users').insert([
-    { name: 'User #1', email: 'user@mail.com', passwd: '$2a$10$8fZO8t7337U00aACrIRPguEl.GaH66BDMmou6pryh9fZGRJ2sZGVa' },
-    { name: 'User #2', email: 'user2@mail.com', passwd: '$2a$10$8fZO8t7337U00aACrIRPguEl.GaH66BDMmou6pryh9fZGRJ2sZGVa' }
+    { name: 'User #1', email: `user${Date.now()}@email.com`, passwd: '$2a$10$8fZO8t7337U00aACrIRPguEl.GaH66BDMmou6pryh9fZGRJ2sZGVa' },
+    { name: 'User #2', email: `user2${Date.now()}@email.com`, passwd: '$2a$10$8fZO8t7337U00aACrIRPguEl.GaH66BDMmou6pryh9fZGRJ2sZGVa' }
   ], '*');
+  usersToRemove.push(...users);
   [user, user2] = users;
   delete user.passwd;
   user.token = jwt.encode(user, 'Segredo!');
@@ -27,20 +31,41 @@ beforeAll(async () => {
     { name: 'Acc #2', user_id: user2.id }
   ], '*');
   [accUser, accUser2] = accs;
+  accountsToRemove.push(...accs);
+});
+
+afterAll(async () => {
+  transactions.forEach(async (transaction) => {
+    // Removes all transactions created during testing.
+    await app.db('transactions').where({ id: transaction.id }).del();
+  });
+  await new Promise((r) => setTimeout(r, 2000)); // Wait 2 seconds
+  accountsToRemove.forEach(async (acc) => {
+    // Removes all accounts created during testing.
+    await app.db('accounts').where({ id: acc.id }).del();
+  });
+  await new Promise((r) => setTimeout(r, 2000)); // Wait 2 seconds
+  usersToRemove.forEach(async (usr) => {
+    await app.db('users').where({ id: usr.id }).del();
+  });
 });
 
 test('Should list only the transactions of current user', async () => {
   // dois usuários, duas contas, duas transações.
-  await app.db('transactions').insert([
-    { description: 'T1', date: new Date(), ammount: 100, type: 'I', acc_id: accUser.id },
-    { description: 'T2', date: new Date(), ammount: 300, type: 'O', acc_id: accUser2.id }
-  ]).then(() => request(app).get(MAIN_ROUTE)
+  const transaction1 = await app.db('transactions').insert(
+    { description: 'T1', date: new Date(), ammount: 100, type: 'I', acc_id: accUser.id }, ['id']
+  );
+  const transaction2 = await app.db('transactions').insert(
+    { description: 'T2', date: new Date(), ammount: 300, type: 'O', acc_id: accUser2.id }, ['id']
+  );
+  request(app).get(MAIN_ROUTE)
     .set('authorization', `bearer ${user.token}`)
     .then((res) => {
       expect(res.status).toBe(200);
       expect(res.body).toHaveLength(1);
       expect(res.body[0].description).toBe('T1');
-    }));
+    });
+  transactions.push(transaction1[0], transaction2[0]);
 });
 
 test('Should insert a transaction with sucess', async () => {
@@ -51,6 +76,7 @@ test('Should insert a transaction with sucess', async () => {
       expect(res.status).toBe(201);
       expect(res.body.acc_id).toBe(accUser.id);
       expect(res.body.ammount).toBe('100.00');
+      transactions.push(res.body);
     });
 });
 
@@ -62,6 +88,7 @@ test('Transactions of income should to be positive', async () => {
       expect(res.status).toBe(201);
       expect(res.body.acc_id).toBe(accUser.id);
       expect(res.body.ammount).toBe('100.00');
+      transactions.push(res.body);
     });
 });
 
@@ -95,6 +122,7 @@ test('Transactions of outcome should to be negative', async () => {
       expect(res.status).toBe(201);
       expect(res.body.acc_id).toBe(accUser.id);
       expect(res.body.ammount).toBe('-100.00');
+      transactions.push(res.body);
     });
 });
 
@@ -102,6 +130,7 @@ test('Should return a transaction by ID', async () => {
   const transactionID = await app.db('transactions').insert(
     { description: 'T ID', date: new Date(), ammount: 100, type: 'I', acc_id: accUser.id }, ['id']
   );
+  transactions.push(transactionID[0]);
 
   await request(app).get(`${MAIN_ROUTE}/${transactionID[0].id}`)
     .set('authorization', `bearer ${user.token}`)
@@ -116,6 +145,7 @@ test('Should modifier a transaction', async () => {
   const transactionID = await app.db('transactions').insert(
     { description: 'Transaction to Edit', date: new Date(), ammount: 100, type: 'I', acc_id: accUser.id }, ['id']
   );
+  transactions.push(transactionID[0]);
 
   await request(app).put(`${MAIN_ROUTE}/${transactionID[0].id}`)
     .set('authorization', `bearer ${user.token}`)
@@ -142,6 +172,7 @@ test('Should not perform any action in a transaction of another user', async () 
   const transationToRemove = await app.db('transactions').insert(
     { description: 'Transaction to delete', date: new Date(), ammount: 100, type: 'I', acc_id: accUser2.id }, ['id']
   );
+  transactions.push(transationToRemove[0]);
 
   // Should not return
   await request(app).get(`${MAIN_ROUTE}/${transationToRemove[0].id}`)
@@ -170,9 +201,10 @@ test('Should not perform any action in a transaction of another user', async () 
 });
 
 test('Should not remove a account with transactions', async () => {
-  await app.db('transactions').insert(
+  const transaction = await app.db('transactions').insert(
     { description: 'Transaction to delete', date: new Date(), ammount: 100, type: 'I', acc_id: accUser.id }, ['id']
   );
+  transactions.push(transaction[0]);
 
   await request(app).delete(`/v1/accounts/${accUser.id}`)
     .set('authorization', `bearer ${user.token}`)
