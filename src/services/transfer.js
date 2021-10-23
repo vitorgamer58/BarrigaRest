@@ -5,11 +5,7 @@ module.exports = (app) => {
     .where(filter)
     .select();
 
-  const findOne = (filter = {}) => app.db('transfers')
-    .where(filter)
-    .first();
-
-  const save = async (transfer) => {
+  const validate = async (transfer) => {
     // Validação
     if (!transfer.description) throw new ValidationError('description é um atributo obrigatório');
     if (!transfer.ammount) throw new ValidationError('ammount é um atributo obrigatório');
@@ -22,7 +18,12 @@ module.exports = (app) => {
     accounts.forEach((acc) => {
       if (acc.user_id !== parseInt(transfer.user_id, 10)) throw new ValidationError(`Conta #${acc.id} não pertence ao usuário`);
     });
+  };
+  const findOne = (filter = {}) => app.db('transfers')
+    .where(filter)
+    .first();
 
+  const save = async (transfer) => {
     const result = await app.db('transfers').insert(transfer, '*');
     const transferId = result[0].id;
 
@@ -35,5 +36,21 @@ module.exports = (app) => {
     return result;
   };
 
-  return { find, save, findOne };
+  const update = async (id, transfer) => {
+    const result = await app.db('transfers').where({ id }).update(transfer, '*');
+    const transactions = [
+      { description: `Transfer to acc #${transfer.acc_dest_id}`, date: transfer.date, ammount: transfer.ammount * -1, type: 'O', acc_id: transfer.acc_ori_id, transfer_id: id },
+      { description: `Transfer from acc #${transfer.acc_ori_id}`, date: transfer.date, ammount: transfer.ammount, type: 'I', acc_id: transfer.acc_dest_id, transfer_id: id }
+    ];
+    await app.db('transactions').where({ transfer_id: id }).del();
+    await app.db('transactions').insert(transactions);
+    return result;
+  };
+
+  const remove = async (id) => {
+    await app.db('transactions').where({ transfer_id: id }).del();
+    return app.db('transfers').where({ id }).del();
+  };
+
+  return { find, save, findOne, update, validate, remove };
 };

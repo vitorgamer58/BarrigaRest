@@ -1,3 +1,5 @@
+/* eslint-disable jest/no-conditional-expect */
+/* eslint-disable jest/no-done-callback */
 const request = require('supertest');
 const jwt = require('jwt-simple');
 const app = require('../../src/app');
