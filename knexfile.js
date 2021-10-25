@@ -8,10 +8,9 @@ module.exports = {
       host: 'investimentos.notasdovitor.top',
       user: 'postgres',
       password: process.env.DB_PASSWORD,
-      database: 'barriga',
+      database: 'barriga'
     },
-    migrations: {
-      directory: 'src/migrations',
-    },
-  },
+    migrations: { directory: 'src/migrations' },
+    seeds: { directory: 'src/seeds' }
+  }
 };
