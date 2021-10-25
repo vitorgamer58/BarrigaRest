@@ -68,7 +68,7 @@ test('Should list only the transactions of current user', async () => {
   transactions.push(transaction1[0], transaction2[0]);
 });
 
-test('Should insert a transaction with sucess', async () => {
+test('Should insert a transaction with success', async () => {
   await request(app).post(MAIN_ROUTE)
     .set('authorization', `bearer ${user.token}`)
     .send({ description: 'New T', date: new Date(), ammount: 100, type: 'I', acc_id: accUser.id })

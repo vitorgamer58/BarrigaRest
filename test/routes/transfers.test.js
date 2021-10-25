@@ -22,7 +22,7 @@ test('Should list only transfers of one user', async () => {
     });
 });
 
-test('Should insert a transfer with sucessful', async () => {
+test('Should insert a transfer with successful', async () => {
   await request(app).post(MAIN_ROUTE)
     .set('authorization', `bearer ${TOKEN}`)
     .send({ description: 'Regular transfer', user_id: 10000, acc_ori_id: 10000, acc_dest_id: 10001, ammount: 100, date: new Date() })
@@ -176,25 +176,25 @@ describe('When try to change a invalid transfer', () => {
       expect(res.body.error).toBe(errorMessage);
     });
 
-  test('Should not insert a transfer without description', async () => {
+  test('Should not change a transfer without description', async () => {
     await savetransaction({ description: null }, 'description é um atributo obrigatório');
   });
-  test('Should not insert a transfer without ammount', async () => {
+  test('Should not change a transfer without ammount', async () => {
     await savetransaction({ ammount: null }, 'ammount é um atributo obrigatório');
   });
-  test('Should not insert a transfer without date', async () => {
+  test('Should not change a transfer without date', async () => {
     await savetransaction({ date: null }, 'date é um atributo obrigatório');
   });
-  test('Should not insert a transfer without account of origin', async () => {
+  test('Should not change a transfer without account of origin', async () => {
     await savetransaction({ acc_ori_id: null }, 'acc_ori_id é um atributo obrigatório');
   });
-  test('Should not insert a transfer without account of destination', async () => {
+  test('Should not change a transfer without account of destination', async () => {
     await savetransaction({ acc_dest_id: null }, 'acc_dest_id é um atributo obrigatório');
   });
-  test('Should not insert if the account of origin and destination be the same', async () => {
+  test('Should not change if the account of origin and destination be the same', async () => {
     await savetransaction({ acc_ori_id: 10000, acc_dest_id: 10000 }, 'Não é possível transferir de uma conta para ela mesma');
   });
-  test('Should not insert if the accounts belong to another user', async () => {
+  test('Should not change if the accounts belong to another user', async () => {
     await savetransaction({ acc_ori_id: 10002 }, 'Conta #10002 não pertence ao usuário');
   });
 });

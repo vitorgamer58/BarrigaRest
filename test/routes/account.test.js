@@ -31,7 +31,7 @@ afterAll(async () => {
   });
 });
 
-test('Should insert an account with sucess', async () => {
+test('Should insert an account with success', async () => {
   await request(app).post(MAIN_ROUTE)
     .send({ name: 'Account 2' })
     .set('authorization', `bearer ${user.token}`)
