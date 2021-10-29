@@ -17,10 +17,10 @@ beforeAll(async () => {
   // await app.db('accounts').del();
   // await app.db('users').del();
   const users = await app.db('users').insert([
-    { name: 'User #1', email: `user${Date.now()}@email.com`, passwd: '$2a$10$8fZO8t7337U00aACrIRPguEl.GaH66BDMmou6pryh9fZGRJ2sZGVa' },
-    { name: 'User #2', email: `user2${Date.now()}@email.com`, passwd: '$2a$10$8fZO8t7337U00aACrIRPguEl.GaH66BDMmou6pryh9fZGRJ2sZGVa' }
+    { name: 'User TR #1', email: `user${Date.now()}@email.com`, passwd: '$2a$10$8fZO8t7337U00aACrIRPguEl.GaH66BDMmou6pryh9fZGRJ2sZGVa' },
+    { name: 'User TR #2', email: `user2${Date.now()}@email.com`, passwd: '$2a$10$8fZO8t7337U00aACrIRPguEl.GaH66BDMmou6pryh9fZGRJ2sZGVa' }
   ], '*');
-  usersToRemove.push(...users);
+  usersToRemove.push(users[0], users[1]);
   [user, user2] = users;
   delete user.passwd;
   user.token = jwt.encode(user, 'Segredo!');
@@ -39,15 +39,17 @@ afterAll(async () => {
     // Removes all transactions created during testing.
     await app.db('transactions').where({ id: transaction.id }).del();
   });
-  await new Promise((r) => setTimeout(r, 2000)); // Wait 2 seconds
+  await new Promise((r) => setTimeout(r, 1000)); // Wait one second
   accountsToRemove.forEach(async (acc) => {
     // Removes all accounts created during testing.
     await app.db('accounts').where({ id: acc.id }).del();
   });
-  await new Promise((r) => setTimeout(r, 2000)); // Wait 2 seconds
+  await new Promise((r) => setTimeout(r, 1000)); // Wait one second
   usersToRemove.forEach(async (usr) => {
+    // Removes all users created during testing.
     await app.db('users').where({ id: usr.id }).del();
   });
+  await new Promise((r) => setTimeout(r, 1000)); // Wait one second
 });
 
 test('Should list only the transactions of current user', async () => {

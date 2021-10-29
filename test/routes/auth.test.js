@@ -4,11 +4,12 @@ const app = require('../../src/app');
 
 const usersToDelete = [];
 
-afterAll(() => {
+afterAll(async () => {
   usersToDelete.forEach(async (usr) => {
     // Removes all users created during testing.
     await app.db('users').where({ id: usr.id }).del();
   });
+  await new Promise((r) => setTimeout(r, 1000)); // Wait 1 second
 });
 
 test('Should create user with signup route', async () => {

@@ -80,6 +80,11 @@ describe('When create a valid transfer...', () => {
     expect(incometransaction.transfer_id).toBe(transferId);
     expect(outcometransaction.transfer_id).toBe(transferId);
   });
+
+  test('Both transactions should with status equal to true', async () => {
+    expect(incometransaction.status).toBe(true);
+    expect(outcometransaction.status).toBe(true);
+  });
 });
 
 describe('When try to save a invalid transfer', () => {

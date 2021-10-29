@@ -5,21 +5,22 @@ const jwt = require('jwt-simple');
 const app = require('../../src/app');
 
 const MAIN_ROUTE = '/v1/users';
-const mail = `${Date.now()}@gmail.com`;
+const mail = `${Date.now() + 1}@gmail.com`;
 let user;
 const usersToRemove = [];
 
 beforeAll(async () => {
-  const res = await app.services.user.save({ name: 'User account', email: `${Date.now()}@gmail.com`, passwd: 123456 });
+  const res = await app.services.user.save({ name: 'User account', email: `${Date.now() + 2}@gmail.com`, passwd: 123456 });
   user = { ...res[0] };
   user.token = jwt.encode(user, 'Segredo!');
   usersToRemove.push(...res);
 });
 
-afterAll(() => {
+afterAll(async () => {
   usersToRemove.forEach(async (usr) => {
     await app.db('users').where({ id: usr.id }).del();
   });
+  await new Promise((r) => setTimeout(r, 1000)); // Wait 1 second
 });
 
 test('Should list all users', async () => {
@@ -39,7 +40,7 @@ test('Should insert user', async () => {
     .then((res) => {
       expect(res.status).toBe(201);
       expect(res.body.name).toBe('Joao Silva');
-      usersToRemove.push({ id: res.body.id });
+      usersToRemove.push({ id: res.body.id, email: res.body.email });
       expect(res.body).not.toHaveProperty('passwd');
     });
 });

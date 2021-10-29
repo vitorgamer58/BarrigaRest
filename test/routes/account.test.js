@@ -25,10 +25,10 @@ afterAll(async () => {
   accountsToDelete.forEach(async (acc) => {
     await app.db('accounts').where({ id: acc.id }).del();
   });
-  await new Promise((r) => setTimeout(r, 1000)); // Wait 1 second
   usersToDelete.forEach(async (usr) => {
     await app.db('users').where({ id: usr.id }).del();
   });
+  await new Promise((r) => setTimeout(r, 1000)); // Wait 1 second
 });
 
 test('Should insert an account with success', async () => {
