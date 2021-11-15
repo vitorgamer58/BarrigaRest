@@ -26,7 +26,7 @@ test('Should create user with signup route', async () => {
     });
 });
 
-test('Should receive token when login', async (done) => {
+test('Should receive token when login', async () => {
   const email = `${Date.now()}@gmail.com`;
   await app.services.user.save({ name: 'Joao', email, passwd: '123456' }, ['id']) // Create a user
     .then((userId) => {
@@ -38,10 +38,9 @@ test('Should receive token when login', async (done) => {
           expect(res.body).toHaveProperty('token');
         });
     });
-  done();
 });
 
-test('Should not authenticate the user with the wrong password', async (done) => {
+test('Should not authenticate the user with the wrong password', async () => {
   const email = `${Date.now()}@gmail.com`;
   await app.services.user.save({ name: 'Joao', email, passwd: '123456' }, ['id']) // Create a user
     .then((userId) => {
@@ -53,17 +52,15 @@ test('Should not authenticate the user with the wrong password', async (done) =>
           expect(res.body.error).toBe('Usuário ou senha incorreto.');
         });
     });
-  done();
 });
 
-test('Should not authenticate the user with invalid email', async (done) => {
+test('Should not authenticate the user with invalid email', async () => {
   await request(app).post('/auth/signin')
     .send({ email: 'NaoExiste@a.com.br', passwd: '654321' }) // Senha incorreta
     .then((res) => {
       expect(res.status).toBe(400);
       expect(res.body.error).toBe('Usuário ou senha incorreto.');
     });
-  done();
 });
 
 test('Should not access a protected route without token', async () => {

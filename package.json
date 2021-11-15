@@ -4,21 +4,24 @@
   "description": "Criando uma API REST aplicando TDD desde o princípio",
   "main": "index.js",
   "scripts": {
-    "start": "node src/server.js",
-    "test": "jest --runInBand --verbose=true --forceExit",
+    "start": "cross-env NODE_ENV=prod node src/server.js",
+    "test": "cross-env NODE_ENV=test jest --runInBand --verbose=true --forceExit --collectCoverage=true",
     "lint": "eslint src/** test/** --fix",
-    "jest:secure": "jest --watchAll --verbose=true --runInBand",
+    "jest:secure": "cross-env NODE_ENV=test jest --watchAll --verbose=true --runInBand",
     "migrate:latest": "node_modules/.bin/knex migrate:latest --env test",
     "migrate:rollback": "node_modules/.bin/knex migrate:rollback --env test"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/preset-env": "^7.16.0",
+    "babel-jest": "^27.3.1",
     "eslint": "^7.30.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-jest": "^24.4.0",
-    "jest": "23.6.0",
+    "jest": "^27.3.1",
     "jest-extended": "^0.11.5",
     "supertest": "^3.3.0"
   },
@@ -35,6 +38,7 @@
     "moment": "2.22.2",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
-    "pg": "8.0.3"
+    "pg": "8.0.3",
+    "cross-env": "5.2.0"
   }
 }
