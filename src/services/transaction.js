@@ -5,7 +5,15 @@ module.exports = (app) => {
     .join('accounts', 'accounts.id', 'acc_id')
     .where(filter)
     .andWhere('accounts.user_id', '=', userId)
-    .select();
+    .select({
+      id: 'transactions.id',
+      ammount: 'transactions.ammount',
+      description: 'transactions.description',
+      account_name: 'accounts.name',
+      status: 'transactions.status',
+      type: 'transactions.type',
+      transfer_id: 'transactions.transfer_id'
+    });
 
   const findOne = (filter) => app.db('transactions').where(filter).first();
 
