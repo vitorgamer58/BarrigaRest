@@ -95,12 +95,11 @@ test('Should not insert user with existing email', async () => {
     });
 });
 
-test.skip('Should not insert user with invalid email', async () => {
-  // TODO: validate email
+test('Should not insert user with invalid email', async () => {
   await request(app).post(MAIN_ROUTE)
     .send({ name: 'Joao Silva', email: 'a', passwd: '123456' })
     .set('authorization', `bearer ${user.token}`)
     .then((res) => {
-      expect(res.status).toBe(500);
+      expect(res.status).toBe(400);
     });
 });

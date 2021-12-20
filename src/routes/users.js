@@ -7,10 +7,6 @@ module.exports = (app) => {
     app.services.user.findAll()
       .then((result) => res.status(200).json(result))
       .catch((err) => next(err));
-    /* const users = [
-      { name: 'John Doe', email: 'a@a.com' },
-    ];
-    res.status(200).json(users); */
   });
 
   router.post('/', async (req, res, next) => {
